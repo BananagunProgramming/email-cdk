@@ -29,7 +29,7 @@ export class ApiGatewayStack extends cdk.Stack {
             options: {
                 credentialsRole: integrationRole,
                 requestParameters: {
-                    'integration.request.header.Content-Type': 'application/json',
+                    'integration.request.header.Content-Type': `'application/json'`,
                 },
                 requestTemplates: {
                     'application/json': 'Action=SendMessage&MessageBody=$input.body',
