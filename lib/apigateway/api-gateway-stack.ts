@@ -29,7 +29,7 @@ export class ApiGatewayStack extends cdk.Stack {
             options: {
                 credentialsRole: integrationRole,
                 requestParameters: {
-                    'integration.request.header.Content-Type': 'application/x-www-form-urlencoded',
+                    'integration.request.header.Content-Type': `'application/x-www-form-urlencoded'`,
                 },
                 requestTemplates: {
                     'application/json': 'Action=SendMessage&MessageBody=$input.body',
