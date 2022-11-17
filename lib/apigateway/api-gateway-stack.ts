@@ -9,26 +9,27 @@ export class ApiGatewayStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
-        // role
+        // role granting apigateway permission to send message to sqs
         const integrationRole = new IAM.Role(this, 'integration-role', {
             assumedBy: new IAM.ServicePrincipal('apigateway.amazonaws.com'),
         });
         //create queue
         const queue = new sqs.Queue(this, 'EmailInbound', {
+            queueName: 'EmailSqs',
             encryption: sqs.QueueEncryption.SQS_MANAGED
         });
         //grant send message to api
         queue.grantSendMessages(integrationRole);
 
         // Api Gateway Direct Integration
-        const sendMessageIntegration = new ApiGW.AwsIntegration({
+        const apiToQueueIntegration = new ApiGW.AwsIntegration({
             service: 'sqs',
             path: '${process.env.CDK_DEFAULT_ACCOUNT}/${queue.queueName}',
             integrationHttpMethod: 'POST',
             options: {
                 credentialsRole: integrationRole,
                 requestParameters: {
-                    'integration.request.header.Content-Type': `'application/json'`,
+                    'integration.request.header.Content-Type': 'application/x-www-form-urlencoded',
                 },
                 requestTemplates: {
                     'application/json': 'Action=SendMessage&MessageBody=$input.body',
@@ -52,10 +53,10 @@ export class ApiGatewayStack extends cdk.Stack {
             description: 'api gateway to the email service'
         });
 
-        api.root.addMethod('POST', sendMessageIntegration, {
+        api.root.addMethod('POST', apiToQueueIntegration, {
             methodResponses: [
                 {
-                    statusCode: '204',
+                    statusCode: '202',
                 },
                 {
                     statusCode: '400',
@@ -65,7 +66,5 @@ export class ApiGatewayStack extends cdk.Stack {
                 }
             ]
         });
-
-        //const send = api.root.addResource('send');        
     }
 }

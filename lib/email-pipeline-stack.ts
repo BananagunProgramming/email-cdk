@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { CodePipeline, CodePipelineSource, ShellStep, ManualApprovalStep } from 'aws-cdk-lib/pipelines';
 import { EmailPipelineStage } from './email-pipeline-stage';
 
-export class EmailCdkStack extends cdk.Stack {
+export class EmailPipelineStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -22,7 +22,7 @@ export class EmailCdkStack extends cdk.Stack {
       }
     }));
 
-    testingStage.addPost(new ManualApprovalStep('Please approve release'));
+    //testingStage.addPost(new ManualApprovalStep('Please approve release'));
   
   }
 }

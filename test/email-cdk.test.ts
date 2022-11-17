@@ -7,7 +7,7 @@
 test('SQS Queue Created', () => {
 //   const app = new cdk.App();
 //     // WHEN
-//   const stack = new EmailCdk.EmailCdkStack(app, 'MyTestStack');
+//   const stack = new EmailCdk.EmailPipelineStack(app, 'MyTestStack');
 //     // THEN
 //   const template = Template.fromStack(stack);
 
