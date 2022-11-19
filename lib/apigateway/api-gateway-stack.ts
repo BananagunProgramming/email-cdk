@@ -4,6 +4,7 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as IAM from 'aws-cdk-lib/aws-iam';
 import * as ApiGW from 'aws-cdk-lib/aws-apigateway';
+import { env } from 'process';
 
 export class ApiGatewayStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -15,7 +16,7 @@ export class ApiGatewayStack extends cdk.Stack {
         });
         //create queue
         const queue = new sqs.Queue(this, 'EmailInbound', {
-            queueName: 'EmailSqs',
+            queueName: 'email-sqs',
             encryption: sqs.QueueEncryption.SQS_MANAGED
         });
         //grant send message to api
@@ -24,7 +25,7 @@ export class ApiGatewayStack extends cdk.Stack {
         // Api Gateway Direct Integration
         const apiToQueueIntegration = new ApiGW.AwsIntegration({
             service: 'sqs',
-            path: '${process.env.CDK_DEFAULT_ACCOUNT}/${queue.queueName}',
+            path: env.account + '/' + queue.queueName,
             integrationHttpMethod: 'POST',
             options: {
                 credentialsRole: integrationRole,
