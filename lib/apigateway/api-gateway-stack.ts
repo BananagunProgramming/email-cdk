@@ -3,8 +3,6 @@ import { Construct } from 'constructs';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as IAM from 'aws-cdk-lib/aws-iam';
-import * as ApiGW from 'aws-cdk-lib/aws-apigateway';
-import { env } from 'process';
 
 export class ApiGatewayStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -23,9 +21,9 @@ export class ApiGatewayStack extends cdk.Stack {
         queue.grantSendMessages(integrationRole);
 
         // Api Gateway Direct Integration
-        const apiToQueueIntegration = new ApiGW.AwsIntegration({
+        const apiToQueueIntegration = new apigateway.AwsIntegration({
             service: 'sqs',
-            path: env.account + '/' + queue.queueName,
+            path: process.env.account + '/' + queue.queueName,
             integrationHttpMethod: 'POST',
             options: {
                 credentialsRole: integrationRole,

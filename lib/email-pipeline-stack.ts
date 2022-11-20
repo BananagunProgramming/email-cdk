@@ -15,7 +15,7 @@ export class EmailPipelineStack extends cdk.Stack {
       })
     });
 
-    const testingStage = pipeline.addStage(new EmailPipelineStage(this, 'testing', {
+    pipeline.addStage(new EmailPipelineStage(this, 'testing', {
       env: {
         account: '460032395895',
         region: 'us-east-1'    
