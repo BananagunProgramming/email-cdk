@@ -23,7 +23,7 @@ export class ApiGatewayStack extends cdk.Stack {
         // Api Gateway Direct Integration
         const apiToQueueIntegration = new apigateway.AwsIntegration({
             service: 'sqs',
-            path: process.env.account + '/' + queue.queueName,
+            path: "460032395895" + '/' + queue.queueName,
             integrationHttpMethod: 'POST',
             options: {
                 credentialsRole: integrationRole,
