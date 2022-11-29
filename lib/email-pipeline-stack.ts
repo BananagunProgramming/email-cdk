@@ -15,14 +15,23 @@ export class EmailPipelineStack extends cdk.Stack {
       })
     });
 
-    pipeline.addStage(new EmailPipelineStage(this, 'testing', {
-      env: {
+    pipeline.addStage(new EmailPipelineStage(this, 'test', {
+      env: {//does this accountId need to be hard coded here? It's in the email-cdk.ts
         account: '460032395895',
-        region: 'us-east-1'    
-      }
+        region: 'us-east-1'
+      },
+      stageName: 'test'
     }));
 
-    //testingStage.addPost(new ManualApprovalStep('Please approve release'));
+    var liveStage = pipeline.addStage(new EmailPipelineStage(this, 'live', {
+      env: {//does this accountId need to be hard coded here? It's in the email-cdk.ts
+        account: '460032395895',
+        region: 'us-east-1'    
+      },
+      stageName: 'live'
+    }));
+
+    liveStage.addPost(new ManualApprovalStep('Please approve release to live'));
   
   }
 }

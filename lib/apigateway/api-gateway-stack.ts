@@ -15,14 +15,15 @@ export class ApiGatewayStack extends cdk.Stack {
         //create queue
         const queue = new sqs.Queue(this, 'EmailInbound', {
             queueName: 'email-sqs',
-            encryption: sqs.QueueEncryption.SQS_MANAGED
+            encryption: sqs.QueueEncryption.SQS_MANAGED,
+            
         });
         //grant send message to api
         queue.grantSendMessages(integrationRole);
 
         // Api Gateway Direct Integration
         const apiToQueueIntegration = new apigateway.AwsIntegration({
-            service: 'sqs',
+            service: 'sqs',//accountid should not be hard coded
             path: "460032395895" + '/' + queue.queueName,
             integrationHttpMethod: 'POST',
             options: {
@@ -49,7 +50,7 @@ export class ApiGatewayStack extends cdk.Stack {
 
         const api = new apigateway.RestApi(this, 'email-service-gtw', {
             restApiName: 'email-service-api',
-            description: 'api gateway to the email service'
+            description: 'api gateway to the email service'            
         });
 
         api.root.addMethod('POST', apiToQueueIntegration, {
