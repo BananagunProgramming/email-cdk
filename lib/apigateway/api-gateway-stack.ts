@@ -12,18 +12,20 @@ export class ApiGatewayStack extends cdk.Stack {
         const integrationRole = new IAM.Role(this, 'integration-role', {
             assumedBy: new IAM.ServicePrincipal('apigateway.amazonaws.com'),
         });
-        //create queue
+
+        //sqs queue
         const queue = new sqs.Queue(this, 'EmailInbound', {
             queueName: 'email-sqs',
             encryption: sqs.QueueEncryption.SQS_MANAGED,
             
         });
+
         //grant send message to api
         queue.grantSendMessages(integrationRole);
 
         // Api Gateway Direct Integration
         const apiToQueueIntegration = new apigateway.AwsIntegration({
-            service: 'sqs',//accountid should not be hard coded
+            service: 'sqs',//todo accountid should not be hard coded
             path: "460032395895" + '/' + queue.queueName,
             integrationHttpMethod: 'POST',
             options: {
