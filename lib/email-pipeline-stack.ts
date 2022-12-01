@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { CodePipeline, CodePipelineSource, ShellStep, ManualApprovalStep } from 'aws-cdk-lib/pipelines';
 import { EmailPipelineStage } from './email-pipeline-stage';
+import { LambdaInsightsVersion } from 'aws-cdk-lib/aws-lambda';
 
 export class EmailPipelineStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -13,6 +14,8 @@ export class EmailPipelineStack extends cdk.Stack {
     //   description: 'The environment being deployed to',
     //   allowedValues: ['test','live']
     // })
+    var accountId = '460032395895';
+    var region = 'us-east-1';
     
     const pipeline = new CodePipeline(this, 'EmailCdkPipeline', {
       pipelineName: 'EmailPipeline',
@@ -24,10 +27,17 @@ export class EmailPipelineStack extends cdk.Stack {
 
     pipeline.addStage(new EmailPipelineStage(this, 'GatewaySqs', {
       env: {//todo does this accountId need to be hard coded here? It's in the email-cdk.ts
-        account: '460032395895',
-        region: 'us-east-1'
+        account: accountId,
+        region: region
       }
     }));
+
+    // pipeline.addStage(new LambdaSesStage(this, 'LambdaSes', {
+    //   env: {//todo does this accountId need to be hard coded here? It's in the email-cdk.ts
+    //     account: accountId,
+    //     region: region
+    //   }
+    // }));
 
     // stage was returned by pipeline.addStage
     /*liveStage.addPost(new ShellStep("validate", {

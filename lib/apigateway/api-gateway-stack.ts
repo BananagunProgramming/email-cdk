@@ -41,7 +41,7 @@ export class ApiGatewayStack extends cdk.Stack {
                         statusCode: '202',
                     },
                     {
-                        statusCode: '400',
+                        statusCode: '400',                        
                     },
                     {
                         statusCode: '500',
@@ -68,5 +68,11 @@ export class ApiGatewayStack extends cdk.Stack {
                 }
             ]
         });
+
+        new cdk.CfnOutput(this, 'sqsArn', {
+            value: queue.queueArn,
+            description: 'The ARN of the sqs queue',
+            exportName: 'queueArn',
+          });
     }
 }
