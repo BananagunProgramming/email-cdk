@@ -1,11 +1,11 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { ApiGatewayStack} from './apigateway/api-gateway-stack';
+import { ResourceStack} from './apigateway/resource-stack';
 
-export class ApiGatewayStage extends cdk.Stage {
+export class ResourceStage extends cdk.Stage {
     constructor(scope: Construct, id: string, props?: cdk.StageProps) {
         super(scope, id, props);
 
-        const apigtwStack = new ApiGatewayStack(this, 'ApiGatewayStack');
+        const apigtwStack = new ResourceStack(this, 'ApiGatewayStack');
     }
 }

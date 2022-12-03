@@ -1,8 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { CodePipeline, CodePipelineSource, ShellStep, ManualApprovalStep } from 'aws-cdk-lib/pipelines';
-import { ApiGatewayStage } from './api-gateway-stage';
-import { SendMailStage } from './send-mail-stage';
+import { ResourceStage } from './resource-stage';
 
 export class EmailPipelineStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -26,14 +25,7 @@ export class EmailPipelineStack extends cdk.Stack {
       })
     });
 
-    pipeline.addStage(new ApiGatewayStage(this, 'GatewaySqs', {
-      env: {//todo does this accountId need to be hard coded here? It's in the email-cdk.ts
-        account: accountId,
-        region: region
-      }
-    }));
-
-    pipeline.addStage(new SendMailStage(this, 'LambdaSes', {
+    pipeline.addStage(new ResourceStage(this, 'AllResources', {
       env: {//todo does this accountId need to be hard coded here? It's in the email-cdk.ts
         account: accountId,
         region: region

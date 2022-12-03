@@ -3,24 +3,23 @@ import { Construct } from 'constructs';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as IAM from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
-export class ApiGatewayStack extends cdk.Stack {
+export class ResourceStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
+
+        //sqs queue
+        const queue = new sqs.Queue(this, 'EmailInbound', {
+            queueName: 'email-sqs',
+            encryption: sqs.QueueEncryption.SQS_MANAGED,  
+        });
 
         // role granting apigateway permission to send message to sqs
         const integrationRole = new IAM.Role(this, 'integration-role', {
             assumedBy: new IAM.ServicePrincipal('apigateway.amazonaws.com'),
         });
-
-        //sqs queue
-        const queue = new sqs.Queue(this, 'EmailInbound', {
-            queueName: 'email-sqs',
-            encryption: sqs.QueueEncryption.SQS_MANAGED,
-            
-        });
-
-        //grant send message to api
         queue.grantSendMessages(integrationRole);
 
         // Api Gateway Direct Integration
@@ -69,10 +68,22 @@ export class ApiGatewayStack extends cdk.Stack {
             ]
         });
 
-        new cdk.CfnOutput(this, 'sqsArn', {
-            value: queue.queueArn,
-            description: 'The ARN of the sqs queue',
-            exportName: 'queueArn',
-          });
+        //create lambda
+        const createLambda = new lambda.Function(this, 'create-lambda', {
+            runtime: lambda.Runtime.NODEJS_16_X,
+            handler: 'index.handler',
+            code: lambda.Code.fromAsset('./lib/lambda'),
+            functionName:'process-inbound-sqs'
+        });
+
+        const eventSource = new SqsEventSource(queue);
+        createLambda.addEventSource(eventSource);
+
+        // cdk.CfnParameter
+        // new cdk.CfnOutput(this, 'sqsArn', {
+        //     value: queue.queueArn,
+        //     description: 'The ARN of the sqs queue',
+        //     exportName: 'queueArn',
+        //   });
     }
 }
