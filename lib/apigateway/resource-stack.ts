@@ -2,9 +2,11 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as sns from 'aws-cdk-lib/aws-sns';
 import * as IAM from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { SnsDestination } from 'aws-cdk-lib/aws-lambda-destinations';
 
 export class ResourceStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -68,12 +70,18 @@ export class ResourceStack extends cdk.Stack {
             ]
         });
 
+        //sns destination for lambda function
+        const topic = new sns.Topic(this, 'lambda-target', {
+            topicName: 'lambda-target'
+        })
+
         //create lambda
         const createLambda = new lambda.Function(this, 'create-lambda', {
             runtime: lambda.Runtime.NODEJS_16_X,
             handler: 'index.handler',
             code: lambda.Code.fromAsset('./lib/lambda'),
-            functionName:'process-inbound-sqs'
+            functionName:'process-inbound-sqs',
+            onSuccess: new SnsDestination(topic)
         });
 
         const eventSource = new SqsEventSource(queue);
