@@ -87,6 +87,13 @@ export class ResourceStack extends cdk.Stack {
         const eventSource = new SqsEventSource(queue);
         createLambda.addEventSource(eventSource);
 
+        const snsTargetQue = new sqs.Queue(this, 'snstarget', {
+            queueName: 'last-queu-in-the-line',
+            encryption: sqs.QueueEncryption.SQS_MANAGED,  
+        });
+
+        topic.addSubscription(new cdk.aws_sns_subscriptions.SqsSubscription(snsTargetQue));
+        
         // cdk.CfnParameter
         // new cdk.CfnOutput(this, 'sqsArn', {
         //     value: queue.queueArn,
