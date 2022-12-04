@@ -1,5 +1,5 @@
 
-exports.handler = function(event: { Success: any; }, context: { callbackWaitsForEmptyEventLoop: boolean; }, callback: (arg0: Error | null, arg1: string | undefined) => void) {
+exports.handler = function(event: { Success: any; }, context: { callbackWaitsForEmptyEventLoop: boolean; }, callback: (arg0: Error | null) => void) {
     var event_received_at = new Date().toISOString();
     console.log('Event received at: ' + event_received_at);
     console.log('Received event:', JSON.stringify(event, null, 2));
@@ -11,6 +11,6 @@ exports.handler = function(event: { Success: any; }, context: { callbackWaitsFor
     } else {
         console.log("Failure");
         context.callbackWaitsForEmptyEventLoop = false;
-        callback(new Error("Failure from event, Success = false, I am failing!"), 'Destination Function Error Thrown');
+        callback(new Error("Failure from event, Success = false, I am failing!"));
     }
 };
