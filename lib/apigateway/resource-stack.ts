@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as sns from 'aws-cdk-lib/aws-sns';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as IAM from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
@@ -93,6 +94,11 @@ export class ResourceStack extends cdk.Stack {
         });
 
         topic.addSubscription(new cdk.aws_sns_subscriptions.SqsSubscription(snsTargetQue));
+
+        const table = new dynamodb.Table(this, 'DavnaTable', {
+            partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+            billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+          });
         
         // cdk.CfnParameter
         // new cdk.CfnOutput(this, 'sqsArn', {
